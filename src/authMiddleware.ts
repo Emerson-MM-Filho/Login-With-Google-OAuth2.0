@@ -1,21 +1,35 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
+import dotenv from 'dotenv';
 
-const appCredential = '946242776728-hetk06u45drp07qrgohj4hbciq417p34.apps.googleusercontent.com';
-const client = new OAuth2Client(appCredential);
+import jwt from 'jsonwebtoken';
+
+dotenv.config();
+
+const {GOOGLE_CREDENTIAL, JWT_SECRET} = process.env;
+if(!GOOGLE_CREDENTIAL) {
+    throw new Error('GOOGLE_CREDENTIAL não encontrado')
+}
+
+if(!JWT_SECRET) {
+    throw new Error('JWT_SECRET não encontrado')
+}
+
+
+const client = new OAuth2Client(GOOGLE_CREDENTIAL);
 
 const unAuthorized = (res: Response) => res.sendStatus(401);
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response) => {
     
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.body.token?.replace('Bearer ', '');
     if(!token) {
         return unAuthorized(res);
     }
 
     const ticket = await client.verifyIdToken({
         idToken: token,
-        audience: appCredential,
+        audience: GOOGLE_CREDENTIAL,
     })
     .catch(() => {
         return null;
@@ -31,7 +45,14 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
 
     const userId = payload.sub;
-    res.locals['userId'] = userId;
 
-    next();
+    const accessToken = jwt.sign({
+        sub: userId,
+        name: payload.name,
+        email: payload.email,
+    }, JWT_SECRET, { expiresIn: '2 minutes' });
+
+    return res.json({
+        accessToken,
+    })
 };
