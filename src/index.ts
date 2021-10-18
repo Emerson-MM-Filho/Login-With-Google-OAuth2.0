@@ -17,4 +17,4 @@ app.get('/authenticated', authMiddleware, (_req, res) => {
     })
 })
 
-app.listen(9092, () => console.log('Running in localhost:3000!'));
+app.listen(9092, () => console.log('Running in localhost:9092!'));
