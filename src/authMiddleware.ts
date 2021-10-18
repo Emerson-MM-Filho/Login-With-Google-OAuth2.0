@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 
-const CLIENT_ID = '946242776728-hetk06u45drp07qrgohj4hbciq417p34.apps.googleusercontent.com';
-const client = new OAuth2Client(CLIENT_ID);
+const appCredential = '946242776728-hetk06u45drp07qrgohj4hbciq417p34.apps.googleusercontent.com';
+const client = new OAuth2Client(appCredential);
 
 const unAuthorized = (res: Response) => res.sendStatus(401);
 
@@ -15,7 +15,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const ticket = await client.verifyIdToken({
         idToken: token,
-        audience: CLIENT_ID,
+        audience: appCredential,
     })
     .catch(() => {
         return null;
