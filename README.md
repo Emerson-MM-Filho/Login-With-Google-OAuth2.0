@@ -11,8 +11,11 @@ This project was made with the following technologies:
 
 ## How to run
 
-- Clone the repository
-- Run `npm install` to download all dependencies
+- Clone the repository;
+- Run `npm install` to download all dependencies;
+- Create an .env file according to .env.example
+  - Use an hash md5 in JWT_SECRET;
+  - You can create a credential in google in this [link](https://console.cloud.google.com/apis/credentials);
 - Run `npm run dev` to start the application.
 
 Finally, the application will be available at `http://localhost:9092`
